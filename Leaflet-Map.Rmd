@@ -1,0 +1,28 @@
+---
+title: "Academic Institutions"
+author: "CARivero"
+date: "January 30, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+These are the schools I have attended:
+
+```{r map, echo = FALSE, message = FALSE}
+library(leaflet)
+schools <- data.frame(
+        names = c("St. Mary's College of Meycauayan",
+                  "Jesus Is Lord Colleges Foundation, Inc.",
+                  "University of the Philippines, Diliman",
+                  "Asian Institute of Management"),
+        lat = c(14.739091, 14.786772, 14.656445, 14.552463),
+        lng = c(120.959290, 120.931546, 121.069666, 121.018764),
+        stringsAsFactors = FALSE
+)
+schools %>% leaflet() %>% addTiles() %>% addMarkers(popup = schools$names)
+```
+
+

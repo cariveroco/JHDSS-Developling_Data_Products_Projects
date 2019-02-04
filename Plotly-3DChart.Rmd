@@ -1,0 +1,30 @@
+---
+title: "Motor Trend Car Road Tests"
+author: "CARivero"
+date: "January 30, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models). The points were plotted with the following attributes:
+
+- x-axis: Gross Horsepower
+- y-axis: Weight per 1000 lbs
+- z-axis: Miles per US Gallon
+- color: Number of cylinders
+
+
+```{r cars, echo = FALSE, message = FALSE}
+library(plotly)
+library(dplyr)  ## define %>%
+
+plot_ly(mtcars, x = ~hp, y = ~wt, z = ~mpg, color = ~as.factor(cyl), type = "scatter3d", mode = "markers") %>%
+layout(scene = list(xaxis = list(title = 'Gross Horsepower'),
+        yaxis = list(title = 'Weight per 1000 lbs'),
+        zaxis = list(title = 'Miles/US Gallon')))
+```
+
+

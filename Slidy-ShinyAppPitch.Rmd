@@ -1,0 +1,132 @@
+---
+title: "Central Limit Theorem: Proof by Simulation"
+author: "CARivero"
+date: "February 2, 2019"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Central Limit Theorem
+
+The **Central Limit Theorem** states that given  samples of independent and 
+identically distributed random variables from a population distribution, and 
+given that the samples are sufficiently large with size \\(n\\), then the 
+**sampling distribution of the sample mean** will have the following properties:
+
+* **Distribution**  
+Even if the population distribution is non-Gaussian, the distribution 
+of the sample mean will be approximately normal.
+* **Center**  
+The center of the distribution of the sample mean \\(\\bar x\\) will 
+be approximately equal to the population mean \\(\\mu\\).
+* **Spread**  
+The standard error of the distribution of the sample mean (SEM) will 
+be approximately equal to the ratio of the population standard error 
+\\(\\sigma\\) and square root of the sample size. \\(SEM = \\frac{\\sigma}{\\sqrt{n}}\\)
+
+**Interactive Proof!**  
+The Shiny application will allow the user to prove this theorem by simulation
+of exponentials, with user-provided rate \\(lambda\\) and sample size \\(n\\).
+A histogram will then be returned to show the shape of the distribution of sample
+means, along with the values of the theoretical and simulated means and standard errors. 
+
+
+## Shiny App Interface
+
+Given the default input values \\(\\lambda = 0.2\\) and \\(n = 40\\), the Shiny
+app will return the following output, among others:
+
+```{r app, echo = FALSE, message = FALSE, fig.height = 4}
+
+## Define INPUT variables using defaults
+lambda <- 0.2; n <- 40
+
+## Calculate OUTPUT variables (theoretical statistics) in sidebar
+Theoretical <- list()
+Theoretical$pop.mean = round(1/lambda,3); Theoretical$pop.sd = round(1/lambda,3)
+Theoretical$CLT.mean = Theoretical$pop.mean; Theoretical$CLT.SEM = round(Theoretical$pop.sd/sqrt(n), 3)
+
+## Calculate OUTPUT variables (Simulated statistics) in tabs
+set.seed(3049);
+sample <- matrix(rexp(1000*n, lambda), nrow = 1000, ncol = n)
+means <- apply(sample, MARGIN = 1, FUN = mean)
+Simulated <- list()
+Simulated$samp.mean = round(mean(sample),3); Simulated$samp.sd = round(sd(sample),3)
+Simulated$sampmean.mean = round(mean(means),3); Simulated$sampmean.SEM = round(sd(means),3)
+
+## Create plot
+hist(means, breaks = seq(0,100,0.125), xaxt = "n", freq = FALSE,
+        xlim = c(0,10), ylim = c(0,0.6), main = "Sampling Distribution of Mean of Exponentials",
+        xlab = expression(Mean~of~italic(n)~Exponentials), ylab = "Density"
+     )
+        axis(side = 1, at = seq(0,10,1), labels = as.character(seq(0,10,1)), tck=-.05)
+        abline(v = mean(means), col = "red", lwd = 2)
+        library(EnvStats)
+        curve(demp(x, as.vector(means)), add = TRUE, col = "red", lwd = 2)
+        curve(dnorm(x, mean = 1/lambda, sd = 1/lambda/sqrt(n)),
+              add=TRUE, col="blue", lwd = 2)
+```
+
+Statistics         |  Mean                        |  SEM
+------------------ |------------------------------|--------------------------------
+Theoretical (CLT)  | `r Theoretical$CLT.mean`     |  `r Theoretical$CLT.SEM`
+Simulated          | `r Simulated$sampmean.mean`  |  `r Simulated$sampmean.SEM` 
+
+
+## Shiny App Input and Output
+
+* Input Variables
+  + Rate Parameter, \\(\\lambda\\) (sidebar) - lambda, default = 0.2
+  + Sample Size, \\(n\\) (sidebar) - n, default = 40
+   
+* Text Output Variables: Theoretical
+  + Population Mean, \\(\\mu\\) (sidebar) - pop.mean
+  + Population Standard Deviation, \\(\\sigma\\) (sidebar) - pop.sd
+  + CLT Mean, Theoretical \\(\\bar x\\) (sidebar) - CLT.mean
+  + CLT SEM, Theoretical \\(SEM\\) (sidebar) - CLT.SEM
+
+* Text Output Variables: Simulated
+  + Sample Mean, \\(\\bar x\\) (tab 2) - samp.mean
+  + Sample Standard Deviation, \\(s\\) (tab 2) - samp.sd
+  + Mean of Sample Means, Simulated \\(\\bar x\\) (tab 3) - sampmean.mean
+  + Standard Error of Sample Means, Simulated \\(SEM\\) (tab 3) - sampmean.SEM
+   
+* Plot Output and Checkbox Input
+  + Sampling Distribution of Exponentials (tab 2)
+    - Histogram
+    - Sample Mean (optional) - shows abline at the mean of simulated exponentials
+    - Population Density Curve (optional) - shows density curve of the exponential populaton at given \\(\\lambda\\)
+  + Sampling Distribution of Mean of Exponentials (tab 3)
+    - Histogram
+    - Simulated Mean (optional) - shows abline at the mean of simulated mean of exponentials
+    - Simulated Density Curve (optional) - shows density curve of the simulated means of exponentials
+    - Theoretical Density Curve (optional) - shows the normal curve per CLT-predicted \\(\\mu\\) and \\(SEM\\)
+
+
+## Background Calculations
+
+```{r CLT, echo = TRUE, comment = ""}
+
+## Define INPUT variables using defaults
+lambda <- 0.2; n <- 40
+
+## Calculate OUTPUT variables (theoretical statistics) in sidebar
+Theoretical <- list()
+Theoretical$pop.mean = round(1/lambda,3); Theoretical$pop.sd = round(1/lambda,3)
+Theoretical$CLT.mean = Theoretical$pop.mean; Theoretical$CLT.SEM = round(Theoretical$pop.sd/sqrt(n), 3)
+
+## Calculate OUTPUT variables (Simulated statistics) in tabs
+set.seed(3049);
+sample <- matrix(rexp(1000*n, lambda), nrow = 1000, ncol = n)
+means <- apply(sample, MARGIN = 1, FUN = mean)
+Simulated <- list()
+Simulated$samp.mean = round(mean(sample),3); Simulated$samp.sd = round(sd(sample),3)
+Simulated$sampmean.mean = round(mean(means),3); Simulated$sampmean.SEM = round(sd(means),3)
+
+unlist(Theoretical); unlist(Simulated)
+```
+
+

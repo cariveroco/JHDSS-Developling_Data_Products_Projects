@@ -1,0 +1,12 @@
+name: ShinyApp-CLTProof
+title: ShinyApp-CLTProof
+username:
+account: carivero
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 683104
+bundleId: 1850723
+url: https://carivero.shinyapps.io/ShinyApp-CLTProof/
+when: 1549043700.92149
+asMultiple: FALSE
+asStatic: FALSE
